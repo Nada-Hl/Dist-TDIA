@@ -1,0 +1,101 @@
+#! /usr/bin/env python3
+import os
+import sys
+import stat
+import argparse
+import datetime
+import logging
+import json
+with open("/TDIAFS/etc/actualUser","r") as file:
+       data=json.load(file)
+       file.close()
+user=data["Utilisateur"] 
+logging.basicConfig(filename="/TDIAFS/var/logging", level=logging.DEBUG,
+                    format="%(name)s | %(levelname)s | %(asctime)s | %(message)s")
+logger = logging.getLogger(user)
+
+
+def custom_command(file_path, args):
+    try:
+        file_info = os.stat(file_path)
+
+        if args.help:
+            print("Aide :")
+            print("-c : Afficher les lignes contenant une chaine spécifiée.")
+            print("-nc : Afficher les lignes ne contenant pas une chaine spécifiée.")
+            print("-N : Afficher les lignes contenant une chaine avec le numéro de ligne.")
+            print("-perm : Afficher les permissions du fichier.")
+            print("-user : Afficher l'ID du propriétaire du fichier.")
+            print("-taille : Afficher la taille du fichier en octets.")
+            print("-cdate : Afficher la date de création du fichier.")
+            print("-mdate : Afficher la date de dernière modification du fichier.")
+            logger.info("Affichage de l'aide")
+            sys.exit(0)
+
+        if args.c:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if args.c in line:
+                        print(line.strip())
+                        logger.info("Le calcul des lignes contenant")
+
+        if args.nc:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    if args.nc not in line:
+                        print(line.strip())
+                        logger.info("Le calcul des lignes qui ne contenant pas")
+
+        if args.N:
+            with open(file_path, 'r') as file:
+                for line_number, line in enumerate(file, 1):
+                    if args.N in line:
+                        print(f"{line_number}: {line.strip()}")
+                        logger.info("Numerotation des lignes contenant")
+
+        if args.perm:
+            print(f"Permissions: {stat.filemode(file_info.st_mode)}")
+            logger.info(f"Affichage des permissions du fichier {file_path}")
+
+        if args.user:
+            print(f"Propriétaire: {file_info.st_uid}")
+            logger.info(f"Affichage de l'UID du fichier {file_path}")
+
+        if args.taille:
+            print(f"Taille du fichier: {file_info.st_size} octets")
+            logger.info(f"Affichage de la taille du fichier {file_path} en octet ")
+
+        if args.cdate:
+            creation_time = datetime.datetime.fromtimestamp(file_info.st_ctime).strftime('%Y-%m-%d %H:%M:%S')
+            print(f"Date de création: {creation_time}")
+            logger.info(f"Affichage de la date de création du fichier {file_path}")
+
+        if args.mdate:
+            modification_time = datetime.datetime.fromtimestamp(file_info.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+            print(f"Date de dernière modification: {modification_time}")
+            logger.info(f"Affichage de la date de la dernière modification du fichier {file_path}")
+
+
+    except FileNotFoundError:
+        print(f"Le fichier '{file_path}' n'a pas été trouvé.")
+        logger.error(f"Le fichier '{file_path}' n'existe pas.")
+    except Exception as e:
+        print(f"Il y a une erreur : {e}")
+        logger.error("Erreur")
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("file", help="Chemin du fichier à traiter")
+parser.add_argument("-c", help="Afficher les lignes contenant une chaine spécifiée.")
+parser.add_argument("-nc", help="Afficher les lignes ne contenant pas une chaine spécifiée.")
+parser.add_argument("-N", help="Afficher les lignes contenant une chaine avec le numéro de ligne.")
+parser.add_argument("-perm", action="store_true", help="Afficher les permissions du fichier.")
+parser.add_argument("-user", action="store_true", help="Afficher l'ID du propriétaire du fichier.")
+parser.add_argument("-taille", action="store_true", help="Afficher la taille du fichier en octets.")
+parser.add_argument("-cdate", action="store_true", help="Afficher la date de création du fichier.")
+parser.add_argument("-mdate", action="store_true", help="Afficher la date de dernière modification du fichier.")
+parser.add_argument("-help", action="store_true", help="Afficher l'aide.")
+
+args = parser.parse_args()
+
+custom_command(args.file, args)
