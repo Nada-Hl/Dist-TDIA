@@ -4,14 +4,14 @@ import json
 from argparse import ArgumentParser,Namespace
 import getpass
 import os
-with open("/etc/actualUser","r") as file:
+with open("/TDIAFS/etc/actualUser","r") as file:
     datauser=json.load(file)
     file.close()
 user=datauser["Utilisateur"]
 userd=datauser["Repertoire"]
 start_point="/home/{}".format(userd)
 logger=logging.getLogger(user)
-logging.basicConfig(filename="/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
+logging.basicConfig(filename="/TDIAFS/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
 parser=ArgumentParser(description="Verrouiller un fichier ")
 parser.add_argument('-u','--unlock',help="Deverrouiller un fichier",type=str)
 args,arg1=parser.parse_known_args()
@@ -22,15 +22,15 @@ try:
                 return 1
         return None
     def lock(filename,password):
-        with open("/etc/usersfile","r") as file:
+        with open("/TDIAFS/etc/usersfile","r") as file:
             datafile=json.load(file)
             file.close()
         datafile[userd][filename]=password
-        with open("/etc/usersfile", "w") as file:
+        with open("/TDIAFS/etc/usersfile", "w") as file:
             json.dump(datafile,file,indent=2)
             file.close()
     def check_empty_password(filename):
-        with open("/etc/usersfile.json","r") as file:
+        with open("/TDIAFS/etc/usersfile","r") as file:
             datafile=json.load(file)
             file.close()
         comp=str(datafile[userd][str(filename)])
@@ -38,11 +38,11 @@ try:
             return 1
         return None
     def unlock(filename):
-        with open("/etc/usersfile.json","r") as file:
+        with open("/TDIAFS/etc/usersfile","r") as file:
             datafile=json.load(file)
             file.close()
         datafile[userd][filename]=""
-        with open("/etc/usersfile.json", "w") as file:
+        with open("/TDIAFS/etc/usersfile", "w") as file:
             json.dump(datafile,file,indent=2)
             file.close()
     if args.unlock:
@@ -51,7 +51,7 @@ try:
                 print("Ce fichier a déjà été déverrouillé")
             else:
                 password = getpass.getpass(prompt="Voudrais-vous donner le mot de passe pour déverrouiller")
-                with open("/etc/usersfile.json", "r") as file:
+                with open("/TDIAFS/etc/usersfile", "r") as file:
                     datafile = json.load(file)
                     file.close()
                 if datafile[userd][args.unlock]== password:

@@ -21,7 +21,7 @@ def main():
         month = int(sys.argv[2])
         display_calendar(year, month)
     else:
-        print("Usage: calendar [mois] [année]")
+        print("Usage: calendar [annee] [mois]")
         sys.exit(1)
 
 if __name__ == "__main__":

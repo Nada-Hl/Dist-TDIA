@@ -5,11 +5,11 @@ import logging
 import json
 
 # Configuration du logger
-with open("/etc/actualUser") as file:
+with open("/TDIAFS/etc/actualUser") as file:
     datauser = json.load(file)
     file.close()
 user = datauser["Utilisateur"]
-logging.basicConfig(filename="/var/logging", level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s")
+logging.basicConfig(filename="/TDIAFS/var/logging", level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s")
 logger = logging.getLogger(user)
 def obtenir_date_actuelle():
     try:

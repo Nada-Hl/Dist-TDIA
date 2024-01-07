@@ -4,13 +4,13 @@ import os
 import sys
 import logging
 import json
-with open("/etc/actualUser","r") as file:
+with open("/TDIAFS/etc/actualUser","r") as file:
       datauser=json.load(file)
       file.close()
 user = datauser["Utilisateur"]
 userd=datauser["Repertoire"]
 user_directory="/home/{}".format(userd)
-logging.basicConfig(filename="/var/logging", level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s")
+logging.basicConfig(filename="/TDIAFS/var/logging", level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s")
 logger = logging.getLogger(user)
 
 

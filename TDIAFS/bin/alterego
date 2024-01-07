@@ -7,19 +7,17 @@ import logging
 import json
 import shutil
 
-fileps = "/etc/password"
-log_file = "/var/log/logging"
+fileps = "/TDIAFS/etc/password"
+log_file = "/TDIAFS/var/logging"
 
-with open ("/home/dana/file.json") as file :
+with open ("/TDIAFS/etc/actualUser","r") as file :
        datauser=json.load(file)
 user=datauser["Utilisateur"]
 logger = logging.getLogger(user)
 
 logging.basicConfig(filename=log_file, level=logging.DEBUG, format=f'{user} | %(asctime)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-
-
 def print_help():
-        print("Usage: python3 alterusr.py <username> <option1> <value1> [<option2> <value2> ...]")
+        print("Usage: alterego <username> <option1> <value1> [<option2> <value2> ...]")
         print("Options:")
         print("-a  : Renommer (alias)")
         print("-cp : Changer le mot de passe (change password)")
@@ -31,11 +29,6 @@ def print_help():
 
 def alter_ego(username, options):
     valid_options = ['-a', '-cp', '-cs', '-i', '-d']
-    if os.geteuid() != 0:
-        print("Vous devriez avoir les droits d'accees de root.")
-        logging.error("N'a pas les droits d'acces de root.")
-        sys.exit(1)
-
     with open(fileps, 'r') as f:
         lines = f.readlines()
 
@@ -46,13 +39,12 @@ def alter_ego(username, options):
         if line.startswith(username + ":"):
             user_exists = True
             fields = line.split(':')
-
             for option in valid_options:
                 if option in options:
                     option_found = True
-
                     if option == '-a':
                         new_alias = options[option]
+                        old_alias = fields[0]
                         fields[0] = new_alias
                         logging.info(f"{username} (Nom) est change a {new_alias}")
 
@@ -70,16 +62,16 @@ def alter_ego(username, options):
                         logging.info(f"{username} (UID) est change a {new_uid}")
 
                     elif option == '-d':
-                        new_dwelling = options[option]
-                        fields[4] =f"{new_dwelling}"
-                        old_home_dir = f"/home/{username}"
+                        new_dwelling = options['-d']
+                        old_dwelling = fields[4]
+                        fields[4] = new_dwelling
+                        old_home_dir = f"/home/{old_dwelling}"
                         new_home_dir = f"/home/{new_dwelling}"
                         try:
-                             shutil.move(old_home_dir, new_home_dir)
-                             logging.info(f"{username} (Repertoire) est change a {new_dwelling}")
+                           shutil.move(old_home_dir.strip('\n'), new_home_dir.strip('\n'))
+                           logging.info(f"{username} (Repertoire) est change a {new_dwelling}")
                         except Exception as e:
-                             print(f"Erreur lors du changement de repertoire: {e}")
-
+                           print(f"Erreur lors du changement de repertoire: {e}")
             lines[i] = ":".join(fields)
 
     if not user_exists:
@@ -100,9 +92,9 @@ def alter_ego(username, options):
         print("-d  : Changer le répertoire personnel (Dwelling)")
         logging.error("L'option entrer n'existe pas.")
         sys.exit(1)
-def set_password(username, password):
-    hashed_password = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
 
+def set_password(username, password):
+    hashed_password = crypt.crypt(password)
     with open(fileps, "r") as password_file:
         password_lines = password_file.readlines()
 
@@ -136,16 +128,15 @@ def set_expiration_date(username, expiration_date):
 if __name__ == "__main__":
     if '-h' in sys.argv or '--help' in sys.argv:
         print_help()
-
     if len(sys.argv) < 4 or (len(sys.argv) - 2) % 2 != 0:
-        print("Usage : python3 alterusr.py <username> <option1> <valeur1> [<option2> <valeur2> ...]")
+        print("Usage : alterego <username> <option1> <valeur1> [<option2> <valeur2> ...]")
         logging.error("La syntaxe entrer est invalide")
         sys.exit(1)
-
     username = sys.argv[1]
     options = {sys.argv[i]: sys.argv[i + 1] for i in range(2, len(sys.argv), 2)}
 
     alter_ego(username, options)
 
     print(f"L'utilisateur {username} est modifié avec succès.")
+
 

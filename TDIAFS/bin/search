@@ -6,11 +6,11 @@ import argparse
 import datetime
 import logging
 import json
-with open("/etc/actualUser","r") as file:
+with open("/TDIAFS/etc/actualUser","r") as file:
        data=json.load(file)
        file.close()
 user=data["Utilisateur"] 
-logging.basicConfig(filename="/var/logging", level=logging.DEBUG,
+logging.basicConfig(filename="/TDIAFS/var/logging", level=logging.DEBUG,
                     format="%(name)s | %(levelname)s | %(asctime)s | %(message)s")
 logger = logging.getLogger(user)
 

@@ -13,7 +13,7 @@ completion_color = '\033[91m'
 progress_bar_color = '\033[92m'
 reset_color = '\033[0m'
 total_iterations = 100
-logging.basicConfig(filename="/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
+logging.basicConfig(filename="/TDIAFS/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
 try :
     def create_user_directory(username):
         path=os.path.join("/home/",str(username))
@@ -28,7 +28,7 @@ try :
             logger = logging.getLogger(str(username))
             logger.info("Le répertoire {} a été ajouté avec succès".format(str(username)))
     def check_username(name):
-        with open("/etc/password","r") as file :
+        with open("/TDIAFS/etc/password","r") as file :
             lignes=file.readlines()
             for ligne in lignes:
                 if name==ligne.split(":")[0]:
@@ -38,7 +38,7 @@ try :
             return 0
     def assign_uid():
         uid =random.randint(1000,32767)
-        with open("/etc/password",'r') as f:
+        with open("/TDIAFS/etc/password",'r') as f:
             lignes=f.readlines()
             list=[]
             for ligne in lignes:
@@ -49,11 +49,11 @@ try :
         return uid
 
     def add_to_json_file(user):
-        with open("/etc/usersfile","r") as file:
+        with open("/TDIAFS/etc/usersfile","r") as file:
             data=json.load(file)
             file.close()
         data[user]={}
-        with open("/etc/usersfile", "w") as file:
+        with open("/TDIAFS/etc/usersfile", "w") as file:
             json.dump(data,file,indent=2)
             file.close()
 
@@ -78,7 +78,7 @@ try :
         logger = logging.getLogger(str(args.username))
         logger.info("Mot de passe généré")
 
-        with open("/etc/password","a") as file :
+        with open("/TDIAFS/etc/password","a") as file :
             add=[str(args.username),str(password),str(assign_uid()),"DD-MM-YY",(str(args.username))]
             a=create_user_directory(str(args.username))
             while a==0:

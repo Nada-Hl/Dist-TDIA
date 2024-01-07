@@ -5,9 +5,9 @@ import json
 import logging
 import re
 import subprocess
-logging.basicConfig(filename="/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
+logging.basicConfig(filename="/TDIAFS/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
 try:
-    with open("/etc/actualUser","r") as file:
+    with open("/TDIAFS/etc/actualUser","r") as file:
         data=json.load(file)
         file.close()
     user=data["Utilisateur"]
@@ -61,31 +61,30 @@ try:
 
 
     def f(filename):
-        with open("/etc/usersfile", "r") as file:
+        with open("/TDIAFS/etc/usersfile", "r") as file:
             data = json.load(file)
             file.close()
         data[user].update({filename: ""})
-        with open("/etc/usersfile", "w") as file:
+        with open("/TDIAFS/etc/usersfile", "w") as file:
             json.dump(data, file, indent=2)
             file.close()
     def check_system_path(path):
-        banned_list = ["/", "/etc", "/var","/var","/dev","/proc","/sys","/run","/usr","/home"]
+        banned_list = ["/","/TDIAFS","/etc", "/var","/bin","/dev","/proc","/sys","/run","/usr","/home"]
         case = len(path.split('/'))
-        if case >2:
-           if '/'.join(path.split('/')[0:2]) in banned_list[0:9]:
-              print("désolé, vous ne pouvez pas créer de fichier ici avec cet utilisateur")
+        if case >=2:
+           if ("/"+path.split('/')[0]) in banned_list[0:10]:
+              print("désolé, vous ne pouvez pas créer de fichier ici ")
               logger = logging.getLogger(user)
               logger.error("essaye de créer un fichier dans le systéme")
               exit(0)
-           if '/'.join(path.split('/')[:2])==banned_list[9]:
-               if str(path.split('/')[2])!=user:
-                   print(path.split('/')[2])
+           if ("/"+path.split('/')[0])==banned_list[10]:
+               if str(path.split('/')[1])!=user:
                    print("désolé, vous ne pouvez pas créer de fichier ici avec cet utilisateur")
                    logger = logging.getLogger(user)
                    logger.error("essaye de créer un fichier chez un autre utilisateur")
-                   exit(0)
-        elif case==2:
-            if path in banned_list:
+                   exit(0) 
+        elif case==1:
+            if ("/"+path.split('/')[0]) in banned_list:
                 print("désolé, vous ne pouvez pas créer de fichier ici")
                 logger = logging.getLogger(user)
                 logger.error("essaye de créer un fichier dans le systéme")
@@ -99,7 +98,8 @@ try:
     while i < len(sys.argv):
         path =sys.argv[i]
         if '/' in path:
-            check_system_path(path)
+            if path[0]=='/':
+                  check_system_path(path[1:])
             try:
                 path[path.rfind('/') + 1]
             except IndexError:
@@ -119,9 +119,9 @@ try:
 
                 i=i+1
         else:
-            command=subprocess.run('pwd',shell=True,capture_output=True,text=True)
-            r=''.join(command.stdout.split('\n'))
-            check_system_path(r)
+            r=os.getcwd()
+            a=r[1:]
+            check_system_path(a)
             file=check_file(path)
             l=[r,file]
             touch('/'.join(l))

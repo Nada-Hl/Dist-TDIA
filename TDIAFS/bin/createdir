@@ -6,11 +6,11 @@ import json
 from datetime import datetime
 
 # Configuration du logger
-with open("/etc/actualUser"."r") as file:
+with open("/TDIAFS/etc/actualUser","r") as file:
     data=json.load(file)
     file.close()
 user=data["Utilisateur"]
-logging.basicConfig(filename='/var/logging', level=logging.DEBUG,
+logging.basicConfig(filename='/TDIAFS/var/logging', level=logging.DEBUG,
                     format='%(name)s | %(asctime)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 loggger=logging.getLogger(user)
 def create_directories(directory_paths):
@@ -43,5 +43,5 @@ def main():
     directory_paths = sys.argv[1:]
     create_directories(directory_paths)
 
-if _name_ == "_main_":
-    main()
+
+main()

@@ -4,11 +4,11 @@ import json
 import getpass
 import subprocess
 import logging
-logging.basicConfig(filename="/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
-with open("/etc/usersfile","r") as file:
+logging.basicConfig(filename="/TDIAFS/var/logging",filemode="a",level=logging.DEBUG,format="%(name)s | %(levelname)s | %(asctime)s | %(message)s ")
+with open("/TDIAFS/etc/usersfile","r") as file:
     datafile=json.load(file)
     file.close()
-with open("/etc/actualUser","r") as file:
+with open("/TDIAFS/etc/actualUser","r") as file:
     datauser=json.load(file)
     file.close()
 user=datauser["Utilisateur"]
@@ -25,12 +25,12 @@ try:
                 break
         if x:
             if datafile[user][sys.argv[1]] == "":
-                subprocess.run(['nano',sys.argv[1]])
+                subprocess.run(['op',sys.argv[1]])
             else:
-                password = getpass.getpass(prompt="would check the password")
+                password = getpass.getpass(prompt="Veuillez saisir le mot de passe")
                 logger.info("{} édité".format(sys.argv[1]))
                 if password == datafile[user][sys.argv[1]]:
-                    subprocess.run(['nano',sys.argv[1]])
+                    subprocess.run(['op',sys.argv[1]])
                     logger.info("{} édité".format(sys.argv[1]))
                 else:
                     print("ERREUR : mot de passe incorrect ")

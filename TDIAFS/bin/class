@@ -4,9 +4,9 @@ import sys
 import json
 import logging
 
-log_file = '/var/logging'
+log_file = '/TDIAFS/var/logging'
 
-with open ("/etc/actualUser") as file :
+with open ("/TDIAFS/etc/actualUser") as file :
        datauser=json.load(file)
 user=datauser["Utilisateur"]
 logger = logging.getLogger(user)
