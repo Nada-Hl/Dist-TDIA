@@ -1,0 +1,95 @@
+#! /usr/bin/env python3
+import sys
+import subprocess
+import logging
+import json
+import shutil
+import os 
+
+file1 = "/etc/password"
+log_file = "/var/logging"
+
+with open ("/etc/actualUser","r") as file :
+       datauser=json.load(file)
+user=datauser["Utilisateur"]
+logger = logging.getLogger(user)
+
+logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(name)s | %(asctime)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+def print_help():
+    print("Usage: python eraseusr.py <username>")
+    logging.info("Affichage du menu")
+    sys.exit(0)
+
+def usrexist(username):
+    with open("/etc/password","r") as file:
+        f=file.readlines()
+        for ligne in f:
+            if username==ligne.split(':')[0]:
+                return True
+        return False
+def remove(dir):
+    path="/home/{}".format(dir.strip('\n'))
+    if path==os.getcwd():
+       os.chdir("/home")
+       shutil.rmtree(dir)
+       exit(0)
+    shutil.rmtree(dir)
+
+
+
+
+def usrsur(username):
+    response = input(f"Est-ce que vous êtes sûr que vous voulez supprimer l'utilisateur : '{username}'? [y/n]: ").strip().lower()
+    return response == 'y'
+def recupererd(username):
+    with open("/etc/password","r") as file:
+        lines=file.readlines()
+        for line in lines:
+            line=line.strip('\n')
+            if username==line.split(':')[0]:
+                return line.split(':')[4]
+        file.close()
+    return None
+
+def eraseusr(username):
+    if not usrexist(username):
+        print(f"Erreur: L'utilisateur '{username}' n'existe pas.")
+        logging.error(f"L'utilisateur '{username}' n'existe pas.")
+        sys.exit(1)
+
+    try:
+        if usrsur(username):
+            remove(recupererd(username))
+            with open(file1, 'r') as f:
+                lines = f.readlines()
+
+            with open(file1, 'w') as f:
+                for line in lines:
+                    if not line.startswith(f"{username}:"):
+                        f.write(line)
+
+            print(f"L'utilisateur '{username}' est supprimé avec succès.")
+            logging.info(f"L'utilisateur {username} est supprimé avec succès")
+        else:
+            print("La suppression de l'utilisateur est annulée.")
+            logging.info(f"La suppression de l'utilisateur {username} est annulée .")
+    except KeyboardInterrupt:
+        print("\nSuppression de l'utilisateur annulée.")
+        logging.info(f"La suppression de l'utilisateur {username} est annulée .")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print_help()
+
+    if len(sys.argv) != 2:
+        print("Usage: eraseusr <username>")
+        logging.error("La syntaxe entrée est incorrect.")
+        sys.exit(1)
+
+    username = sys.argv[1]
+    eraseusr(username)
