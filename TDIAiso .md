@@ -1,5 +1,3 @@
-Copiez ce lien sur votre naviguateur web  :
-
 [ lien d' installation ](https://drive.google.com/uc?id=1OutS_uCzBKLZr8qlJL5xp-Or8tlPT3Ld&export=download)
 
 
