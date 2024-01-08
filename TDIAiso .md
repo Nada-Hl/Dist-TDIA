@@ -3,6 +3,8 @@
 Apres avoir y telecharger , essayez de consulter le guide d'insallation de "TDIA-DISTRIBUTION".
 
 
+*_⚠️ AVIS ⚠️_*
+
 **Le guide d'installation est en cours de finalisation.
 Nous vous prions de patinter un peu plus, et il sera disponible .
 Merci de votre comprehension.**
